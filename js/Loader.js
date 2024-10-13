@@ -1,7 +1,7 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { loadCurveFromJSON } from './external/CurveMethods.js'
-
 class Loader
 {
     /**
@@ -47,6 +47,18 @@ class Loader
             }
         })
 
+        const rgbeLoader = new RGBELoader();
+        rgbeLoader.setPath( 'data/' )
+        this.loaders.push({
+            extensions: ['hdr'],
+            action: (_resource) =>
+            {
+                const promise = new Promise((resolve, reject) => {
+                    rgbeLoader.load(_resource.source, (_data) => {resolve(_data); fileLoadEnd(_resource, _data)});
+                })
+                this.promises.push(promise);
+            }
+        })
         // Draco
         const dracoLoader = new DRACOLoader()
         dracoLoader.setDecoderPath('draco/')

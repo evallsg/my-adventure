@@ -16,6 +16,7 @@ class Resources
             { name: 'scene', source: './data/models/mountain_scene.glb' },
             { name: 'character', source: './data/models/Character.glb' },
             { name: 'dog', source: './data/models/ShibaInu.glb' },
+            { name: 'eagle', source: './data/models/Eagle.glb' },
             { name: 'curve_path', source: './data/models/mountain_scene.json' },
           
         ]).then((values) => {

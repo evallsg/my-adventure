@@ -14,6 +14,7 @@ class Character {
         this.animations = {};
         this.IDLE = options.idle_name || "Idle";
         this.WALK = options.walk_name || "Walk";
+        this.RUN = options.run || "Run";
         if(options.animations) {
 
             for(let i = 0; i < options.animations.length; i++) {
@@ -34,7 +35,12 @@ class Character {
                 this.activateAction(this.IDLE);
             }
             else {
-                this.activateAction(this.WALK);
+                if(Math.abs(delta) > 0.005) {
+                    this.activateAction(this.RUN, 0.1);
+
+                } else {
+                    this.activateAction(this.WALK);
+                }
             }
         } else {
             
@@ -52,6 +58,10 @@ class Character {
         if(this.mixer) {
             this.mixer.update(dt);
         }
+    }
+    
+    setActionSpeed(speed) {
+        this.animations[this.currentAnimation].timeScale=speed;
     }
 
     activateAction( name, duration = 0.2 ) {
