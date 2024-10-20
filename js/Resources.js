@@ -17,6 +17,11 @@ class Resources
             { name: 'character', source: './data/models/Character.glb' },
             { name: 'dog', source: './data/models/ShibaInu.glb' },
             { name: 'eagle', source: './data/models/Eagle.glb' },
+            { name: 'deer', source: './data/models/Deer.gltf' },
+            { name: 'horse', source: './data/models/Horse.gltf' },
+            { name: 'fish', source: './data/models/Tetra.glb' },
+            { name: 'eva', source: 'https://models.readyplayer.me/66e30a18eca8fb70dcadde68.glb' },
+            { name: 'eva_animations', source: './data/models/Standing Idle.glb' },
             { name: 'curve_path', source: './data/models/mountain_scene.json' },
           
         ]).then((values) => {

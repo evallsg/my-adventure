@@ -2,19 +2,22 @@ import * as THREE from 'three';
 
 class Character {
     constructor( options = {} ) {
-        this.size = options.size ?? 1.0;
         this.speed = options.speed ?? 1.0;
         this.model = options.object.parser ? options.object.scene : options.object;
         if(options.position) {
             this.model.position.copy(options.position);
         }
 
-        this.currentAnimation = "Walk";
+        if(options.size) {
+            this.model.scale.set(options.size, options.size, options.size);
+        }
+
         this.mixer = new THREE.AnimationMixer(this.model);
         this.animations = {};
         this.IDLE = options.idle_name || "Idle";
         this.WALK = options.walk_name || "Walk";
         this.RUN = options.run || "Run";
+        this.currentAnimation = this.IDLE;
         if(options.animations) {
 
             for(let i = 0; i < options.animations.length; i++) {
@@ -79,6 +82,7 @@ class Character {
     moveForward(amount = 0.1) {
         this.model.position.x += amount;
     }
+
 
 }
 export default Character

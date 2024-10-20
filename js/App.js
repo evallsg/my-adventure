@@ -7,7 +7,9 @@ import Stats from 'three/addons/libs/stats.module.js';
 
 class App {
     constructor() {
-        this.gui = new dat.GUI();
+        // this.gui = new dat.GUI();
+
+        this.hintVisible = true;
 
         this.clock = new THREE.Clock();
         this.elapsedTime = 0;
@@ -36,17 +38,27 @@ class App {
             },
             "INTERNSHIP": {
                 text: "While I was studing, I did an internship in Liquid Sutdios, where I learned how to develop web applications",
-                position: 0.61
-            },
-            "FINAL_PROJECT": {
-                text: "Afterwars, I joined the Interactive Technologies Research Group of the university, where I did my final degree thesis",
+                position: 0.61,
                 content: {
-                    link: "https://webglstudio.org/demos/puppeteering/",
+                    text: "Go to Liquid",
+                    link: "https://www.liquidbcn.com/en/"
+                }
+            },
+            "DEGREE_PROJECT": {
+                text: "Later, I joined the Interactive Technologies Research Group at the university, where I did my final degree thesis",
+                content: {
+                    link: "https://webglstudio.org/papers/ICGI2019/",
                     text: "3D puppeteering on the web",
-                    image: "/data/tfg.jpg"
+                    image: "/data/tfg.png"
                 },
                 position: 0.50 
+            },
+            "TODAY": {
+                text: "I currently work as a support researcher in the same group, specializing in computer animation for embodied virtual characters.",
+                
+                position: 0.40 
             }
+
         }
         this.popupActive = false;
     }
@@ -57,7 +69,6 @@ class App {
         this.scene.background = null// new THREE.Color( sceneColor );
         //this.scene.fog = new THREE.Fog( 0xF4F2DE, 10, 100 );
 
-        
         this.setCamera();
         
         const options = {
@@ -81,14 +92,15 @@ class App {
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild( this.renderer.domElement );
         this.stats = new Stats();
-        document.body.appendChild( this.stats.dom );
-        document.getElementById("loading").style.display = "none";    
-       
+        // document.body.appendChild( this.stats.dom );
         this.drag = this.dragging = false;
         this.offsetX = 0;
         this.offsetY = 0;
         this.animate();  
-
+        
+        document.getElementById("loading").style.display = "none";    
+        document.getElementById("drag-hint").classList.remove('hidden');    
+       
         window.addEventListener( 'resize', this.onWindowResize.bind(this) );
         window.addEventListener( 'keydown', this.onKeyDown.bind(this) );
         window.addEventListener( 'mousedown', this.onMouse.bind(this) );
@@ -101,9 +113,7 @@ class App {
      * Set lights
      */
     setLights()
-    {
-
-      
+    {    
         // Lights
         const hemiLight = new THREE.HemisphereLight( 0xfff, 0xfff, 0.6 );
         hemiLight.color.setHSL( 0.6, 1, 0.6 );
@@ -147,14 +157,14 @@ class App {
             z: 1,
             intensityS: 1
         }
-        const folderLights = this.gui.addFolder( 'Directional Light' );
-        folderLights.add( params, 'color').onChange( (v) => sunLight.color.set(params.color) );   
-        folderLights.add( params, 'intensity').onChange( (v) => sunLight.intensity = v );   
-        folderLights.add( params, 'x').onChange( (v) => sunLight.position.x = v );   
-        folderLights.add( params, 'y').onChange( (v) => sunLight.position.y = v );   
-        folderLights.add( params, 'z').onChange( (v) => sunLight.position.z = v );   
-        folderLights.add( params, 'intensityS').onChange( (v) => sunLight.shadow.intensity = v );   
-        folderLights.open();
+        // const folderLights = this.gui.addFolder( 'Directional Light' );
+        // folderLights.add( params, 'color').onChange( (v) => sunLight.color.set(params.color) );   
+        // folderLights.add( params, 'intensity').onChange( (v) => sunLight.intensity = v );   
+        // folderLights.add( params, 'x').onChange( (v) => sunLight.position.x = v );   
+        // folderLights.add( params, 'y').onChange( (v) => sunLight.position.y = v );   
+        // folderLights.add( params, 'z').onChange( (v) => sunLight.position.z = v );   
+        // folderLights.add( params, 'intensityS').onChange( (v) => sunLight.shadow.intensity = v );   
+        // folderLights.open();
 
         // const directionalLight = new THREE.DirectionalLight( 0xffffff, params.intensity );
         // directionalLight.position.x = params.x;
@@ -194,6 +204,10 @@ class App {
         text.innerText = info.text;
         const button = document.getElementById("popup-button");
         const image = document.getElementById("popup-image");
+        button.classList.add("hidden");
+        image.parentElement.classList.add("hidden");
+
+
         if(info.content) {
             if(info.content.image) {
                 image.parentElement.classList.remove("hidden");
@@ -201,8 +215,11 @@ class App {
             }
             if(info.content.link) {
                 button.innerText = info.content.text;
-                button.parentElement.href = info.content.link;
                 button.classList.remove("hidden")
+                button.onclick = () => {
+
+                    window.open(info.content.link);
+                } 
             }
         }
         else {
@@ -259,12 +276,17 @@ class App {
     onMouse(e) {
         e.preventDefault();
         e.stopPropagation();
+
         if(e.type == 'mousedown') {
             document.body.className = 'grabbing-cursor';
             this.grab = true;
             this.offsetX = e.offsetX;
             this.offsetY = e.offsetY; 
             this.world.startCharacterMovement();
+            if(this.hintVisible) {
+                document.getElementById("drag-hint").classList.add('hidden');    
+                this.hintVisible = false;
+            }
         }
         else if( e.type == 'mousemove' && this.grab) {
             let offset = (this.offsetX - e.offsetX)/window.innerWidth;
@@ -273,11 +295,14 @@ class App {
                 // return;
                 offset = 0;
             }
-            this.offsetX = e.offsetX        
-
+            
             this.grabbing = true;
             const offsetY = (this.offsetY - e.offsetY)/window.innerHeight*0.5;
             const pos = this.world.onMoveCharacter(offset, offsetY);
+            if(!pos) {
+                return;
+            }
+            this.offsetX = e.offsetX        
             for(let data in this.info) {
                 const kpos = this.info[data].position;
                 if(pos <= (kpos + 0.01) && pos >= (kpos - 0.01)) {

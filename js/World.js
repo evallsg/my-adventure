@@ -182,7 +182,8 @@ class World {
       const waterfall = this.scene.getObjectByName("Waterfall");
       water.material.color.set("#9FC3B8");
       waterfall.material = water.material;
-      // const woman = this.scene.getObjectByName("Character");
+
+      // Create woman
       const woman = this.resources.character.scene;
       this.scene.add(woman);
       
@@ -193,7 +194,9 @@ class World {
         }
       )
       this.woman = new Character({object: woman, animations: this.resources.character.animations, idle_name: "Idle_Neutral", size: 0.7});
-      
+      this.woman.activateAction(this.woman.WALK);
+
+      // Create dog
       const dog = this.resources.dog.scene;
       this.scene.add(dog)
       dog.traverse((object)=> {    
@@ -203,7 +206,9 @@ class World {
         }
       )
       this.dog = new Character({object: dog, animations: this.resources.dog.animations, run: "Gallop", size: 0.7});
+      this.dog.activateAction(this.dog.WALK);
       this.scene.add(this.resources.curve_path.mesh)
+
       this.path = this.resources.curve_path.curve;
       this.path.closed = false;       
       // this.dog.scale.set(10,10,10)
@@ -219,9 +224,34 @@ class World {
           this.clouds.push(cloud)
         }
       }
-      this.scene.add(this.resources.eagle.scene);
+
+      // Create Eagle
       this.eagle = new Bird(this.resources.eagle.scene, {position: new THREE.Vector3(5, 8, 5), radius: 10, speed: 0.05, animations: this.resources.eagle.animations})
-      this.onMoveCharacter(0);
+      this.scene.add(this.resources.eagle.scene);
+
+      // Create Eva (me)
+      const eva = this.resources.eva.scene;
+      this.scene.add(eva);
+      this.eva = new Character({object: eva, position: new THREE.Vector3(-0.5, 6.45, -0.5), size: 0.4, animations: this.resources.eva_animations.animations, idle_name: "Standing Idle (3)"})
+
+      // Create Deer
+      const deer = this.resources.deer.scene;
+      this.scene.add(deer);
+      this.deer = new Character({object: deer, position: new THREE.Vector3(10.5, 0.1, 4), size: 0.2, animations: this.resources.deer.animations, idle_name: "Eating"})
+
+      // Create Horse
+      const horse = this.resources.horse.scene;
+      horse.rotateY(Math.PI/2);
+      this.scene.add(horse);
+      this.horse = new Character({object: horse, position: new THREE.Vector3(-11, 0.01, 3), size: 0.2, animations: this.resources.horse.animations})
+     
+      // Create Fish
+      const fish = this.resources.fish.scene;
+      this.scene.add(fish);
+      fish.rotateY(Math.PI);
+      this.fish = new Fish(fish, {object: fish, position: new THREE.Vector3(1.1, -1.1, 8), size: 0.03, speed: 1.2, animations: this.resources.fish.animations, idle_name: "Fish_Armature|Swimming_Normal"})
+
+      this.onMoveCharacter(0.0, 0, true);
     }
 
     update(et, dt, grabbing)
@@ -233,6 +263,7 @@ class World {
       }
       this.woman.update(et, dt);
       this.dog.update(et, dt);
+      this.eva.update(et, dt);
       const w = 2*Math.PI*0.5
       this.boat.rotateZ(0.0005*Math.sin(w*et))
 
@@ -241,11 +272,15 @@ class World {
       }
 
       this.eagle.update(et,dt);
+      this.deer.update(et,dt);
+      this.horse.update(et,dt);
+      this.fish.update(et,dt);
     }
 
-    onMoveCharacter(amount, offsetY = 0) {
+    onMoveCharacter(amount, offsetY = 0, force = false) {
      
-      if(this.elapsed + amount > 1 || this.elapsed + amount < 0.02 ) {
+      if(!force && (this.elapsed + amount > 1 || this.elapsed + amount < 0.02 || amount == 0) ) {
+        
         return;
       }
       this.elapsed +=amount;
@@ -338,11 +373,70 @@ class Bird {
     this.model.position.x = x;
     this.model.position.z = z;
     this.model.position.y -= y;
-   this.model.lookAt(new THREE.Vector3());
-   this.model.rotateY(Math.PI/2)
+    this.model.lookAt(new THREE.Vector3());
+    this.model.rotateY(Math.PI/2)
     this.angle += this.speed;
     if(this.mixer) {
       this.mixer.update(dt);
+    }
+  }
+}
+
+class Fish {
+  constructor(model, options = {}) {
+    this.model = model;
+    this.position = options.position || model.position;
+    this.size = options.size || 1;
+    this.speed = options.speed ||(Math.random() * 0.0001);
+    this.duration = options.duration || 1;
+    this.angle = options.angle || 0;
+    this.animations = options.animations || [];
+
+    this.model.position.copy(this.position);
+    this.model.scale.set(this.size, this.size, this.size);
+    this.reset();
+    if(this.animations.length) {
+      this.mixer = new THREE.AnimationMixer(this.model);
+      this.mixer.clipAction(this.animations[0]).play();
+    }
+  }
+
+  reset() {
+    this.model.position.y = this.position.y;  // Volver al nivel del agua
+    this.model.position.z = this.position.z;  // Volver al nivel del agua
+    this.jump = true;
+    this.angle = 0;
+    this.height = Math.random()+0.1;
+  }
+  update(et, dt) {
+    // if(this.mixer) {
+    //   this.mixer.update(dt);
+    // }
+    if (this.jump) {
+      // Curve of the jump
+      let jumpY = Math.sin(this.angle) * this.height;
+      // Update the jump time
+      this.angle += this.speed*dt;
+      if(jumpY == 1) {
+        return;
+      }
+      // Change the orientation
+      if (this.model.position.y - (this.position.y + jumpY) < 0) {
+        // Top
+        this.model.rotation.x = -Math.PI / 3;  
+      } else {
+        // Down
+        this.model.rotation.x = Math.PI /3 ;  
+      }
+        
+      this.model.position.y = this.position.y + jumpY;
+
+       // If the jump has finished, reset the position
+       if (this.model.position.y < this.position.y) {
+          this.model.position.y = this.position.y;
+          this.jump = false
+          setTimeout(this.reset.bind(this), Math.random() * 5000 + 3000); // Jump again between 3 and 5 seconds
+      }
     }
   }
 }
