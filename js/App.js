@@ -55,8 +55,19 @@ class App {
             },
             "TODAY": {
                 text: "I currently work as a support researcher in the same group, specializing in computer animation for embodied virtual characters.",
-                
-                position: 0.40 
+                content: {
+                    link: "",
+                    text: "See some projects"
+                },
+                position: 0.34 
+            },
+            "COURSES": {
+                text: "I also teach Computer Graphics, Computer Animation and Virual Comunication Environment courses at UPF",
+                content: {
+                    link: "https://upf.edu/web/gti/courses",
+                    text: "See courses"
+                },  
+                position: 0.2
             }
 
         }
