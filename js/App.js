@@ -26,14 +26,14 @@ class App {
                 text: "My adventure started in Arbúcies, a little village in the middle of the mountains",
                 position: 0.99,
                 content : {
-                    image: "/data/arbucies.jpg"
+                    image: "./data/arbucies.jpg"
                 }
             },
             "STUDIES": {
                 text: "I moved to Barcelona for study Audiovisual Systems Engineering and Computer Science at Universitat Pompeu Fabra",
                 position: 0.80,
                 content : {
-                    image: "/data/upf.jpg"
+                    image: "./data/upf.jpg"
                 }
             },
             "INTERNSHIP": {
@@ -49,7 +49,7 @@ class App {
                 content: {
                     link: "https://webglstudio.org/papers/ICGI2019/",
                     text: "3D puppeteering on the web",
-                    image: "/data/tfg.png"
+                    image: "./data/tfg.png"
                 },
                 position: 0.50 
             },

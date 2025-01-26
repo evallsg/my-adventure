@@ -15,11 +15,11 @@ body {
 }
 
 .grab-cursor {
-    cursor: url("/data/grab2.svg"), auto;
+    cursor: url("./data/grab2.svg"), auto;
 }
 
 .grabbing-cursor {
-    cursor: url("/data/grabbing2.svg"), auto;
+    cursor: url("./data/grabbing2.svg"), auto;
 }
 
 a {
