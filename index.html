@@ -4,10 +4,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- <link rel="icon" type="image/x-icon" href="./data/imgs/favicon.png"> -->
         <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
-        <script async src="js/external/es-module-shims.js"></script>
+        <script async src="./js/external/es-module-shims.js"></script>
         <!-- <script async src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js"></script> -->
         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script> -->
-        <link rel="stylesheet" type="text/css" href="/style.css"></script>
+        <link rel="stylesheet" type="text/css" href="./style.css"></script>
             <!-- "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js", -->
             <!-- "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/", -->
         <script type="importmap">
@@ -61,7 +61,7 @@
         <div id="popup" class="popup animation-out">
             <div class="profile">
                 <div class="profile-image">
-                    <img id ="popup-image" src="/data/sombrero-de-graduacion (1).png" />
+                    <img id ="popup-image" src="./data/hat.png" />
                 </div>
                 <h2 class="profile-username" id="popup-text">My adventure started in Arbúcies, a little village in the middle of the mountains</h2>
                 <div class="profile-actions">
@@ -76,6 +76,10 @@
     </body>
     <script type="module"> 
         import {App} from '/js/App.js'
+        // let rel =  window.location.host.includes("github") ? "./my-adventure": "";
+        // var link = document.createElement("link");
+        // link.type = "text/css";
+        // link.href = rel + "./style.css"
         document.getElementById("start-btn").addEventListener("click", () => {
             document.getElementById("welcome-page").style.display = "none";
             const app = new App();
